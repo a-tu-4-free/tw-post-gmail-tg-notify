@@ -1,191 +1,259 @@
-# Gmail → Telegram 通知系統安裝流程
+# Setup Guide
 
-本文件提供從零開始的完整安裝順序。
+本文件說明如何從零開始建立 Gmail → Telegram Notifier。
 
----
+## 1. 建立 Google Apps Script
 
-# Step 1：建立 Telegram Bot
+前往 Google Apps Script：
 
-使用 Telegram Web：
-
-```text
-https://web.telegram.org/
-```
-
-搜尋：
-
-```text
-@BotFather
-```
-
-輸入：
-
-```text
-/newbot
-```
-
-依照指示建立 Bot。
-
-取得：
-
-```text
-Bot Token
-```
-
----
-
-# Step 2：建立 Telegram 群組
-
-在 Telegram Web 建立群組。
-
-例如：
-
-```text
-Gmail通知
-```
-
-將剛剛建立的 Bot 加入群組。
-
----
-
-# Step 3：取得 Chat ID
-
-在群組中傳送測試訊息。
-
-再使用：
-
-```text
-https://api.telegram.org/bot你的TOKEN/getUpdates
-```
-
-查看：
-
-```text
-message.chat.id
-```
-
-例如：
-
-```text
--1001234567890
-```
-
-這就是 Chat ID。
-
----
-
-# Step 4：建立 Google Apps Script
-
-開啟：
-
-```text
 https://script.google.com/
-```
 
-建立新專案。
+建立一個新的 Apps Script 專案。
+
+建議專案名稱：
+
+```text
+Gmail → Telegram Notifier
+```
 
 ---
 
-# Step 5：加入程式
+## 2. 建立 Code.gs
 
-加入：
+在 GitHub Repository 中開啟：
+
+```text
+Code.gs
+```
+
+將完整程式碼複製下來。
+
+回到 Google Apps Script：
+
+1. 開啟 `Code.gs`
+2. 刪除原本內容
+3. 貼上 GitHub 的 `Code.gs`
+4. 儲存
+
+---
+
+## 3. 建立 Index.html
+
+在 Google Apps Script 左側：
+
+```text
++
+→ HTML
+```
+
+建立：
+
+```text
+Index
+```
+
+然後將 GitHub Repository 中的：
+
+```text
+Index.html
+```
+
+完整複製到 Apps Script 的 `Index.html`。
+
+完成後專案應該有：
 
 ```text
 Code.gs
 Index.html
+```
+
+---
+
+## 4. 設定 appsscript.json
+
+Google Apps Script 左側：
+
+```text
+Project Settings
+```
+
+開啟：
+
+```text
+Show "appsscript.json" manifest file in editor
+```
+
+回到編輯器後會看到：
+
+```text
 appsscript.json
 ```
 
-依 GitHub Repository 中目前版本為準。
+將 GitHub Repository 中的 `appsscript.json` 完整複製進去。
+
+目前使用的設定包含：
+
+* Gmail 存取權限
+* 外部連線權限
+* Script Trigger 權限
+* Asia/Taipei 時區
+* V8 Runtime
 
 ---
 
-# Step 6：授權
+## 5. 設定 Telegram
 
-第一次執行 Apps Script 函式時，Google 會要求授權。
+開始之前，請先準備：
 
-完成 Gmail / Script / 外部連線等必要授權。
+* Telegram Bot Token
+* Telegram Group Chat ID
+
+取得方式請參考：
+
+**[TELEGRAM_SETUP.md](TELEGRAM_SETUP.md)**
 
 ---
 
-# Step 7：設定 Script Properties
+## 6. 設定 Script Properties
 
-進入：
+Google Apps Script：
 
 ```text
 Project Settings
 → Script Properties
 ```
 
+建立必要的設定。
+
+主要設定如下：
+
+| Property                | 說明                       |
+| ----------------------- | ------------------------ |
+| `TG_BOT_TOKEN`          | Telegram Bot Token       |
+| `TG_CHAT_ID`            | Telegram 群組 Chat ID      |
+| `INITIAL_HISTORY_HOURS` | Gmail 初次初始化時要忽略的歷史郵件時間   |
+| `NOTIFICATION_START`    | 開始通知時間                   |
+| `NOTIFICATION_END`      | 結束通知時間                   |
+| `NOTIFICATION_ENABLED`  | 是否啟用通知                   |
+| `INCLUDE_GMAIL_LINK`    | Telegram 是否包含 Gmail 郵件連結 |
+
+### 安全注意事項
+
+**不要把 Bot Token 寫進 `Code.gs`。**
+
+Token 應該只放在自己的：
+
+```text
+Script Properties
+```
+
+不要將 Token：
+
+* 上傳 GitHub
+* 貼到公開論壇
+* 傳給其他人
+* 放進前端 HTML
+
+---
+
+## 7. 儲存並授權
+
+第一次執行程式時，Google 可能要求授權。
+
+依照畫面完成 Google 帳號授權。
+
+本專案需要使用：
+
+* Gmail
+* Google Apps Script
+* 外部 HTTP Request
+* 時間觸發器
+
+這些權限是 Gmail → Telegram 自動通知所需要的。
+
+---
+
+## 8. 部署 Web App
+
+在 Google Apps Script：
+
+```text
+Deploy
+→ New deployment
+```
+
+選擇：
+
+```text
+Web app
+```
+
 設定：
 
 ```text
-TG_BOT_TOKEN
-TG_CHAT_ID
-INITIAL_HISTORY_HOURS
-NOTIFICATION_START
-NOTIFICATION_END
-NOTIFICATION_ENABLED
-INCLUDE_GMAIL_LINK
+Execute as:
+Me
+
+Who has access:
+依自己的使用方式選擇
 ```
 
-建議第一次：
+然後按：
 
 ```text
-INITIAL_HISTORY_HOURS=0
-NOTIFICATION_ENABLED=true
+Deploy
 ```
 
-例如：
+Google 會產生一個 Web App URL。
 
-```text
-NOTIFICATION_START=08:00
-NOTIFICATION_END=23:00
-```
+開啟這個 URL，就可以看到本專案的設定介面。
 
 ---
 
-# Step 8：測試 Telegram
+## 9. 開啟 Web App 設定
 
-使用 Web App 中的：
+進入 Web App 後，可以確認：
+
+* Gmail 初始化狀態
+* Telegram Token 是否已設定
+* Telegram Chat ID 是否已設定
+* 通知時間
+* 通知開關
+* Gmail 連結設定
+
+也可以使用：
 
 ```text
-測試 Telegram
+Test Telegram
 ```
 
-確認 Telegram 群組收到測試訊息。
-
-如果沒有收到：
-
-```text
-檢查 Bot Token
-檢查 Chat ID
-檢查 Bot 是否加入群組
-```
+確認 Telegram Bot 是否能正常發送訊息。
 
 ---
 
-# Step 9：初始化 Gmail
+## 10. 初始化 Gmail
 
-第一次使用時執行：
+第一次使用時，先執行：
 
 ```text
-Gmail 初始化
+Initialize Gmail
 ```
 
-初始化的主要目的是避免舊郵件大量觸發通知。
+系統會初始化 Gmail 的監控狀態。
 
 如果：
 
 ```text
-INITIAL_HISTORY_HOURS=0
+INITIAL_HISTORY_HOURS = 0
 ```
 
-則第一次啟動主要是建立安全的初始狀態，而不是將歷史郵件全部發送。
+代表初始化時不處理舊的歷史郵件。
+
+之後新收到的符合條件郵件才會進入通知流程。
 
 ---
 
-# Step 10：建立時間觸發器
+## 11. 建立時間觸發器
 
 Google Apps Script：
 
@@ -194,256 +262,172 @@ Triggers
 → Add Trigger
 ```
 
-選擇 Gmail 檢查函式。
+設定：
 
-時間類型：
+```text
+Choose which function to run:
+checkPostMailAndTelegramNotify
+```
+
+Event source：
 
 ```text
 Time-driven
 ```
 
-間隔：
+選擇：
 
 ```text
 Every minute
 ```
 
----
+儲存。
 
-# Step 11：部署 Web App
-
-選擇：
-
-```text
-Deploy
-→ New deployment
-```
-
-類型：
-
-```text
-Web app
-```
-
-設定執行身分與存取權限。
-
-部署後取得：
-
-```text
-Web App URL
-```
+之後 Google Apps Script 就會定期執行 Gmail 檢查。
 
 ---
 
-# Step 12：測試完整流程
+## 12. 測試
 
-現在寄一封符合條件的測試郵件到 Gmail。
+完成設定後，可以寄一封符合條件的測試郵件到 Gmail。
 
-例如：
-
-```text
-中華郵政測試通知
-```
-
-等待 Trigger 執行。
-
-完整流程應該是：
+系統流程：
 
 ```text
 Gmail
- ↓
+  ↓
 Google Apps Script
- ↓
-Gmail 搜尋
- ↓
-判斷寄件人
- ↓
+  ↓
+檢查未讀郵件
+  ↓
+確認寄件者
+  ↓
+確認通知時間
+  ↓
 Telegram Bot API
- ↓
+  ↓
 Telegram 群組
 ```
 
+如果條件符合，Telegram 群組就會收到通知。
+
 ---
 
-# Step 13：確認狀態
+## 13. 如果沒有收到通知
 
-在 Web App 查看：
+依序檢查：
+
+### Telegram Token
+
+確認：
 
 ```text
-Gmail 初始化
+TG_BOT_TOKEN
 ```
 
-應顯示：
+是否正確。
+
+### Chat ID
+
+確認：
 
 ```text
-已初始化
+TG_CHAT_ID
 ```
 
-同時可以查看：
+是否為正確的 Telegram 群組 Chat ID。
+
+### Bot 是否在群組
+
+確認 Telegram Bot 已加入目標群組。
+
+### 通知是否啟用
+
+確認：
 
 ```text
-最後檢查
-最後通知
+NOTIFICATION_ENABLED
 ```
 
----
+不是停用狀態。
 
-# Step 14：正式使用
+### 通知時間
 
-確認測試成功後：
-
-```text
-Telegram Bot
-+
-Google Apps Script
-+
-Gmail
-+
-Time Trigger
-```
-
-即可持續自動運作。
-
----
-
-# 常見問題
-
-## Q：一定要開著瀏覽器嗎？
-
-不需要。
-
-Google Apps Script 的時間觸發器會在 Google 伺服器端執行。
-
----
-
-## Q：一定要開著 Telegram Web 嗎？
-
-不需要。
-
-Telegram Web 只是在設定 Bot、群組與 Chat ID 時方便操作。
-
-Bot API 本身由 Google Apps Script 直接呼叫。
-
----
-
-## Q：一定要開著 Gmail 嗎？
-
-不需要。
-
-Google Apps Script 使用 GmailApp 存取 Gmail。
-
----
-
-## Q：Bot Token 可以放 GitHub 嗎？
-
-不可以。
-
-Token 應放在：
-
-```text
-Script Properties
-```
-
----
-
-## Q：Chat ID 可以放 GitHub 嗎？
-
-不建議。
-
-即使 Chat ID 本身通常不像 Bot Token 那麼敏感，也應與實際使用者設定分離。
-
----
-
-## Q：修改通知時間需要重新部署嗎？
-
-如果只是修改 Script Properties：
+確認目前時間位於：
 
 ```text
 NOTIFICATION_START
+～
 NOTIFICATION_END
 ```
 
-通常不需要重新部署程式。
+範圍內。
+
+### Gmail 是否初始化
+
+確認 Web App 顯示 Gmail 已初始化。
+
+### Trigger
+
+確認 Google Apps Script：
+
+```text
+Triggers
+```
+
+裡面存在：
+
+```text
+checkPostMailAndTelegramNotify
+```
+
+並且設定為每分鐘執行。
 
 ---
 
-## Q：修改 Code.gs 需要重新部署嗎？
+## 14. 修改程式碼
 
-如果 Web App 使用版本部署：
+如果 GitHub Repository 更新了程式碼：
 
-```text
-需要更新 Deployment
-```
+1. 開啟 GitHub 最新版本
+2. 複製更新後的 `Code.gs`
+3. 貼到自己的 Google Apps Script
+4. 儲存
+5. 建立新的版本
+6. 更新 Web App deployment
 
-尤其是修改：
+### 注意
 
-```text
-Index.html
-```
+Google Apps Script 的 Web App Deployment 可能仍然指向舊版本。
 
-後，如果網頁仍顯示舊版本，請檢查：
+如果修改程式碼後 Web App 沒有變化，請確認：
 
 ```text
 Deploy
 → Manage deployments
-→ 最新版本
+→ Edit
+→ New version
+→ Deploy
 ```
 
 ---
 
-# 最終架構
+## 15. 完成
 
-```text
-                    GitHub
-                       │
-                程式碼 / 文件
-                       │
-                       ▼
-              Google Apps Script
-                       │
-        ┌──────────────┼──────────────┐
-        │              │              │
-      Gmail      Script Properties   Trigger
-        │              │              │
-        │         ┌────┴────┐         │
-        │         │         │         │
-        │       TG Token  Chat ID     │
-        │         │         │         │
-        └─────────┴────┬────┴─────────┘
-                       │
-                       ▼
-                Telegram Bot API
-                       │
-                       ▼
-                 Telegram 群組
-```
-
----
-
-# 完成
-
-完成以上設定後，系統即可在 Google Apps Script 雲端自動執行，不需要個人電腦持續開機。
-
-GitHub 負責：
-
-```text
-程式碼
-文件
-版本管理
-```
-
-Google Apps Script 負責：
+完成以上設定後：
 
 ```text
 Gmail
-執行程式
-Trigger
-Web App
-Script Properties
+   ↓
+Google Apps Script
+   ↓
+Telegram Bot
+   ↓
+Telegram Group
 ```
 
-Telegram 負責：
+即可自動運作。
 
-```text
-即時通知
-```
+使用者自己的 Gmail、Google Apps Script、Telegram Bot Token 和 Chat ID 都由使用者自行管理。
+
+本專案不需要另外建立伺服器。
