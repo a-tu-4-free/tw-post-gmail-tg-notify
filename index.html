@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1">
+
+<title>中華郵政通知設定</title>
+
+<style>
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 24px;
+  background: #f5f6f8;
+  color: #222;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    "PingFang TC",
+    "Microsoft JhengHei",
+    sans-serif;
+}
+
+.container {
+  max-width: 720px;
+  margin: auto;
+}
+
+.card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 22px;
+  margin-bottom: 18px;
+  box-shadow:
+    0 2px 10px rgba(0,0,0,.06);
+}
+
+h1 {
+  margin-top: 0;
+  font-size: 24px;
+}
+
+h2 {
+  margin-top: 0;
+  font-size: 18px;
+}
+
+label {
+  display: block;
+  margin-bottom: 7px;
+  font-weight: 600;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="number"],
+input[type="time"] {
+
+  width: 100%;
+  padding: 11px 12px;
+
+  border: 1px solid #d5d8dd;
+  border-radius: 8px;
+
+  font-size: 15px;
+
+  background: #fff;
+}
+
+input:focus {
+  outline: none;
+  border-color: #4b7bec;
+}
+
+.field {
+  margin-bottom: 18px;
+}
+
+.help {
+  margin-top: 6px;
+  color: #777;
+  font-size: 13px;
+}
+
+.warning {
+  margin-top: 8px;
+  padding: 9px 11px;
+  border-radius: 7px;
+  background: #fff4d6;
+  color: #8a6200;
+  font-size: 13px;
+}
+
+.success {
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #e9f8ee;
+  color: #18743a;
+}
+
+.error {
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #fdecec;
+  color: #b42318;
+}
+
+.status-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 9px 0;
+  border-bottom: 1px solid #eee;
+  gap: 20px;
+}
+
+.status-row:last-child {
+  border-bottom: 0;
+}
+
+.status-label {
+  color: #666;
+}
+
+.status-value {
+  text-align: right;
+  font-weight: 600;
+}
+
+.green {
+  color: #16823b;
+}
+
+.orange {
+  color: #b26a00;
+}
+
+.red {
+  color: #c62828;
+}
+
+button {
+  border: 0;
+  border-radius: 8px;
+  padding: 11px 18px;
+  margin-right: 8px;
+  margin-bottom: 8px;
+
+  font-size: 15px;
+  cursor: pointer;
+
+  background: #333;
+  color: #fff;
+}
+
+button:hover {
+  opacity: .9;
+}
+
+button.secondary {
+  background: #777;
+}
+
+button.danger {
+  background: #a33;
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.checkbox input {
+  width: auto;
+}
+
+#message {
+  margin-bottom: 15px;
+}
+
+.hidden {
+  display: none;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+
+  <div class="card">
+
+    <h1>
+      📬 中華郵政通知系統
+    </h1>
+
+    <div id="message"></div>
+
+    <div id="status">
+
+      載入中……
+
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <h2>
+      Telegram 設定
+    </h2>
+
+
+    <div class="field">
+
+      <label>
+        Telegram Bot Token
+      </label>
+
+      <input
+        type="password"
+        id="token"
+        autocomplete="off"
+        placeholder="尚未設定，請輸入 Bot Token">
+
+      <div
+        id="tokenWarning"
+        class="warning hidden">
+
+        尚未設定 Telegram Bot Token
+
+      </div>
+
+      <div class="help">
+
+        已設定的 Token 不會顯示完整內容。
+
+      </div>
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        Telegram Chat ID
+      </label>
+
+      <input
+        type="text"
+        id="chatId"
+        autocomplete="off"
+        placeholder="尚未設定，請輸入 Chat ID">
+
+      <div
+        id="chatWarning"
+        class="warning hidden">
+
+        尚未設定 Telegram Chat ID
+
+      </div>
+
+    </div>
+
+
+    <button onclick="saveSettings()">
+      儲存設定
+    </button>
+
+    <button
+      class="secondary"
+      onclick="testTelegram()">
+
+      測試 Telegram
+
+    </button>
+
+  </div>
+
+
+  <div class="card">
+
+    <h2>
+      Gmail 通知設定
+    </h2>
+
+
+    <div class="field">
+
+      <label>
+        歷史郵件通知時間
+      </label>
+
+      <input
+        type="number"
+        id="initialHistoryHours"
+        min="0"
+        step="1">
+
+      <div class="help">
+
+        第一次初始化時通知最近幾小時的中華郵政未讀郵件。
+        0 = 不通知歷史郵件。
+
+      </div>
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        通知開始時間
+      </label>
+
+      <input
+        type="time"
+        id="notificationStart">
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        通知結束時間
+      </label>
+
+      <input
+        type="time"
+        id="notificationEnd">
+
+    </div>
+
+
+    <div class="checkbox">
+
+      <input
+        type="checkbox"
+        id="enabled">
+
+      <label
+        for="enabled"
+        style="margin:0">
+
+        啟用 Telegram 通知
+
+      </label>
+
+    </div>
+
+
+    <div class="checkbox">
+
+      <input
+        type="checkbox"
+        id="includeGmailLink">
+
+      <label
+        for="includeGmailLink"
+        style="margin:0">
+
+        Telegram 顯示 Gmail 開啟連結
+
+      </label>
+
+    </div>
+
+
+    <button onclick="saveSettings()">
+      儲存設定
+    </button>
+
+  </div>
+
+
+  <div class="card">
+
+    <h2>
+      Gmail 初始化
+    </h2>
+
+    <p>
+      第一次使用時需要初始化 Gmail。
+      初始化會建立目前郵件的基準，避免舊信件大量通知。
+    </p>
+
+    <button onclick="initializeGmail()">
+      立即初始化 Gmail
+    </button>
+
+    <button
+      class="danger"
+      onclick="resetGmail()">
+
+      重設 Gmail 初始化
+
+    </button>
+
+  </div>
+
+
+</div>
+
+
+<script>
+
+
+/* =================================================
+ * 頁面載入
+ * ================================================= */
+
+window.onload = function() {
+
+  loadSettings();
+
+  loadStatus();
+
+};
+
+
+/* =================================================
+ * 載入設定
+ * ================================================= */
+
+function loadSettings() {
+
+  google.script.run
+    .withSuccessHandler(
+      function(data) {
+
+        document.getElementById(
+          'initialHistoryHours'
+        ).value =
+          data.initialHistoryHours;
+
+
+        document.getElementById(
+          'notificationStart'
+        ).value =
+          data.notificationStart;
+
+
+        document.getElementById(
+          'notificationEnd'
+        ).value =
+          data.notificationEnd;
+
+
+        document.getElementById(
+          'enabled'
+        ).checked =
+          data.enabled;
+
+
+        document.getElementById(
+          'includeGmailLink'
+        ).checked =
+          data.includeGmailLink;
+
+
+        /*
+         * Token 不把真正值放進 input。
+         */
+
+        if (data.hasToken) {
+
+          document.getElementById(
+            'token'
+          ).placeholder =
+            data.tokenMasked;
+
+          document.getElementById(
+            'tokenWarning'
+          ).classList.add('hidden');
+
+        } else {
+
+          document.getElementById(
+            'token'
+          ).placeholder =
+            '尚未設定，請輸入 Bot Token';
+
+          document.getElementById(
+            'tokenWarning'
+          ).classList.remove('hidden');
+        }
+
+
+        if (data.hasChatId) {
+
+          document.getElementById(
+            'chatId'
+          ).placeholder =
+            data.chatIdMasked;
+
+          document.getElementById(
+            'chatWarning'
+          ).classList.add('hidden');
+
+        } else {
+
+          document.getElementById(
+            'chatId'
+          ).placeholder =
+            '尚未設定，請輸入 Chat ID';
+
+          document.getElementById(
+            'chatWarning'
+          ).classList.remove('hidden');
+        }
+
+      }
+    )
+    .withFailureHandler(
+      showError
+    )
+    .getSettings();
+
+}
+
+
+/* =================================================
+ * 儲存設定
+ * ================================================= */
+
+function saveSettings() {
+
+  const data = {
+
+    token:
+      document.getElementById(
+        'token'
+      ).value.trim(),
+
+    chatId:
+      document.getElementById(
+        'chatId'
+      ).value.trim(),
+
+    initialHistoryHours:
+      document.getElementById(
+        'initialHistoryHours'
+      ).value,
+
+    notificationStart:
+      document.getElementById(
+        'notificationStart'
+      ).value,
+
+    notificationEnd:
+      document.getElementById(
+        'notificationEnd'
+      ).value,
+
+    enabled:
+      document.getElementById(
+        'enabled'
+      ).checked,
+
+    includeGmailLink:
+      document.getElementById(
+        'includeGmailLink'
+      ).checked
+  };
+
+
+  google.script.run
+    .withSuccessHandler(
+      function(status) {
+
+        document.getElementById(
+          'token'
+        ).value = '';
+
+        document.getElementById(
+          'chatId'
+        ).value = '';
+
+        showSuccess(
+          '設定已儲存'
+        );
+
+        renderStatus(status);
+
+        loadSettings();
+      }
+    )
+    .withFailureHandler(
+      showError
+    )
+    .saveSettings(data);
+
+}
+
+
+/* =================================================
+ * Telegram 測試
+ * ================================================= */
+
+function testTelegram() {
+
+  showMessage(
+    '正在測試 Telegram……'
+  );
+
+
+  google.script.run
+    .withSuccessHandler(
+      function(status) {
+
+        showSuccess(
+          'Telegram 測試成功'
+        );
+
+        renderStatus(status);
+      }
+    )
+    .withFailureHandler(
+      showError
+    )
+    .testTelegramFromWeb();
+
+}
+
+
+/* =================================================
+ * Gmail 初始化
+ * ================================================= */
+
+function initializeGmail() {
+
+  showMessage(
+    '正在初始化 Gmail，請稍候……'
+  );
+
+
+  google.script.run
+    .withSuccessHandler(
+      function(status) {
+
+        showSuccess(
+          'Gmail 初始化完成'
+        );
+
+        renderStatus(status);
+      }
+    )
+    .withFailureHandler(
+      showError
+    )
+    .initializeGmailFromWeb();
+
+}
+
+
+/* =================================================
+ * 重設 Gmail
+ * ================================================= */
+
+function resetGmail() {
+
+  if (
+    !confirm(
+      '確定要重設 Gmail 初始化狀態嗎？'
+    )
+  ) {
+
+    return;
+  }
+
+
+  google.script.run
+    .withSuccessHandler(
+      function(status) {
+
+        showSuccess(
+          'Gmail 初始化狀態已重設'
+        );
+
+        renderStatus(status);
+      }
+    )
+    .withFailureHandler(
+      showError
+    )
+    .resetGmailInitialization();
+
+}
+
+
+/* =================================================
+ * 載入狀態
+ * ================================================= */
+
+function loadStatus() {
+
+  google.script.run
+    .withSuccessHandler(
+      renderStatus
+    )
+    .withFailureHandler(
+      showError
+    )
+    .getStatus();
+
+}
+
+
+/* =================================================
+ * 顯示狀態
+ * ================================================= */
+
+function renderStatus(status) {
+
+  let html = '';
+
+
+  html +=
+    '<div class="status-row">' +
+
+      '<span class="status-label">' +
+        'Gmail 狀態' +
+      '</span>' +
+
+      '<span class="status-value ' +
+        (
+          status.gmailInitialized
+            ? 'green'
+            : 'orange'
+        ) +
+      '">' +
+
+        (
+          status.gmailInitialized
+            ? '🟢 已初始化'
+            : '🟡 尚未初始化'
+        ) +
+
+      '</span>' +
+
+    '</div>';
+
+
+  html +=
+    '<div class="status-row">' +
+
+      '<span class="status-label">' +
+        'Telegram Bot' +
+      '</span>' +
+
+      '<span class="status-value">' +
+
+        (
+          status.hasToken
+            ? '🟢 已設定'
+            : '🔴 尚未設定'
+        ) +
+
+      '</span>' +
+
+    '</div>';
+
+
+  html +=
+    '<div class="status-row">' +
+
+      '<span class="status-label">' +
+        'Telegram Chat ID' +
+      '</span>' +
+
+      '<span class="status-value">' +
+
+        (
+          status.hasChatId
+            ? '🟢 已設定'
+            : '🔴 尚未設定'
+        ) +
+
+      '</span>' +
+
+    '</div>';
+
+
+  html +=
+    '<div class="status-row">' +
+
+      '<span class="status-label">' +
+        '通知狀態' +
+      '</span>' +
+
+      '<span class="status-value ' +
+        (
+          status.enabled
+            ? 'green'
+            : 'red'
+        ) +
+      '">' +
+
+        (
+          status.enabled
+            ? '🟢 啟用'
+            : '🔴 停用'
+        ) +
+
+      '</span>' +
+
+    '</div>';
+
+
+  html +=
+    '<div class="status-row">' +
+
+      '<span class="status-label">' +
+        '通知時間' +
+      '</span>' +
+
+      '<span class="status-value">' +
+
+        escapeHtml(
+          status.notificationStart
+        ) +
+
+        ' ～ ' +
+
+        escapeHtml(
+          status.notificationEnd
+        ) +
+
+      '</span>' +
+
+    '</div>';
+
+
+  html +=
+    '<div class="status-row">' +
+
+      '<span class="status-label">' +
+        '最後檢查' +
+      '</span>' +
+
+      '<span class="status-value">' +
+
+        escapeHtml(
+          status.lastCheck
+        ) +
+
+      '</span>' +
+
+    '</div>';
+
+
+  html +=
+    '<div class="status-row">' +
+
+      '<span class="status-label">' +
+        '最後通知' +
+      '</span>' +
+
+      '<span class="status-value">' +
+
+        escapeHtml(
+          status.lastNotify
+        ) +
+
+      '</span>' +
+
+    '</div>';
+
+
+  document.getElementById(
+    'status'
+  ).innerHTML = html;
+
+}
+
+
+/* =================================================
+ * 訊息
+ * ================================================= */
+
+function showMessage(text) {
+
+  document.getElementById(
+    'message'
+  ).innerHTML =
+    '<div class="success">' +
+      escapeHtml(text) +
+    '</div>';
+
+}
+
+
+function showSuccess(text) {
+
+  document.getElementById(
+    'message'
+  ).innerHTML =
+    '<div class="success">' +
+      escapeHtml(text) +
+    '</div>';
+
+}
+
+
+function showError(error) {
+
+  const message =
+    error &&
+    error.message
+      ? error.message
+      : String(error);
+
+
+  document.getElementById(
+    'message'
+  ).innerHTML =
+    '<div class="error">' +
+      escapeHtml(message) +
+    '</div>';
+
+}
+
+
+/* =================================================
+ * HTML Escape
+ * ================================================= */
+
+function escapeHtml(text) {
+
+  return String(text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+
+}
+
+</script>
+
+</body>
+
+</html>
